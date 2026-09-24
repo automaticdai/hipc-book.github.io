@@ -55,7 +55,7 @@ for (int i = 0; i < num_items; i++) {
 }
 ```
 
-The code is checking to see if any of the items in a list have a value below a threshold, and if they do it sets a flag to indicate this. In the event that `item[0]` is below the threshold, the code will continue to check further values, despite this having no further effect on the application. Thus, the code could be rewritten with a `break` statement, to enable an early exit from the loop. 
+The code is checking to see if any of the items in a list have a value below a threshold, and if they do it sets a flag to indicate this. In the event that `items[0]` is below the threshold, the code will continue to check further values, despite this having no further effect on the application. Thus, the code could be rewritten with a `break` statement, to enable an early exit from the loop. 
 
 ```c
 int flag = 0;
@@ -119,6 +119,7 @@ The integer values each store spin orientations (and are therefore all `-1` or `
 
 ```c
 int iL, iR, iU, iO, iS, iN;
+int edelz;
 double tt;
 double tanh_table[13];
 ...
@@ -194,12 +195,12 @@ For each iteration of the inner loop, a _branch prediction_ algorithm will try t
 ```c
 for (int i = 0; i < i_max; i++) {
     for (int j = i+1; j < j_max; j++) {
-        c[j] = c[j] + a[i][j] * b[i];
+        c[j] = c[j] - a[i][j] * b[i];
     }
 }
 for (int i = 0; i < i_max; i++) {
-    for (int j = 0; j < i-1; j++) {
-        c[j] = c[j] - a[i][j] * b[i];
+    for (int j = 0; j < i; j++) {
+        c[j] = c[j] + a[i][j] * b[i];
     }
 }
 ```
@@ -226,7 +227,7 @@ The allocate statement will allocate a _contiguous_ block of memory with space f
 _**Figure 3:** Column-major ordering in Fortran_
 {: style="color:gray; font-size: 90%; text-align: center;" }
 
-In C/C++, it is not strictly possible to allocate a _dynamic_ multidimensional array that can be accessed using the standard bracket notation, but we can allocate a 2D array _statically_ like so: 
+In C/C++, it is not typically possible to allocate a _dynamic_ multidimensional array that can be accessed using the standard bracket notation, but we can allocate a 2D array _statically_ like so: 
 
 ```c
 double a[8][16];
@@ -258,7 +259,7 @@ do i=1,8
 enddo
 ```
 
-First, this code would update the value in the first memory location `(1,1)`, but the second access `(1,2)` would at be the 9th location in memory (i.e. a stride of 8 reals). This would make ineffective use of the cache. While this may seem inconsequential, in code that is converted straight from Fortran to C, it is possible that any looping structures are written assuming column-major access. Swapping the inner and outer loop statements can have a significant effect on performance. This is called _**loop interchange**_.
+First, this code would update the value in the first memory location `(1,1)`, but the second access `(1,2)` would be at the 9th location in memory (i.e. a stride of 8 reals). This would make ineffective use of the cache. While this may seem inconsequential, in code that is converted straight from Fortran to C, it is possible that any looping structures are written assuming column-major access. Swapping the inner and outer loop statements can have a significant effect on performance. This is called _**loop interchange**_.
 
 ### Multidimensional Arrays in C
 
@@ -268,7 +269,7 @@ First, we could use a double pointer and allocate the outer array, and then allo
 
 ```c
 double **my_array;
-my_array = (double *) malloc(sizeof(double *) * rows);
+my_array = (double **) malloc(sizeof(double **) * rows);
 for (int i = 0; i < rows; i++) {
     my_array[i] = malloc(sizeof(double) * cols);
 }
@@ -288,7 +289,7 @@ my_array[x * cols + y] = ...;
 This approach has the advantage of contiguous storage, but also increases programmer effort, by requiring manual dereferencing. The use of C pre-processor macros can tidy up this example considerably.
 
 ```c
-#define MY_ARRAY_MACRO(i, j) (my_array[(j) * WIDTH + (i)])
+#define MY_ARRAY_MACRO(i, j) (my_array[(i) * WIDTH + (j)])
 ...
 MY_ARRAY_MACRO(x, y) = ...;
 ```
@@ -302,7 +303,7 @@ In HPC applications, locality of access is important, so approaches that keep me
 > **Further Reading**
 > 
 > * [How to dynamically allocate a 2D array in C?](https://www.geeksforgeeks.org/dynamically-allocate-2d-array-c/)
-> * [std::mdspan](https://en.cppreference.com/w/cpp/container/mdspan), a proposal for the C++23 standard
+> * [std::mdspan](https://en.cppreference.com/w/cpp/container/mdspan), from the C++23 standard
 {: .block-tip }
 
 ### Array-of-Structs vs Struct-of-Arrays
@@ -559,12 +560,14 @@ float * c = _mm_malloc(sizeof(float) * N, 64);
 
 ... // fill a and b with values
 
-for (int i = 0; i < N; i+=8) { // unrolled by a factor of 8
+for (int i = 0; i+8-1 < N; i+=8) { // unrolled by a factor of 8
     __m256 a_v = _mm256_load_ps(a+i);
     __m256 b_v = _mm256_load_ps(b+i);
     __m256 c_v = _mm256_add_ps(a_v, b_v);
     _mm256_store_ps(c+i, c_v);
-
+}
+for ( ; i < N; i++) { // clean up the remaining iterations manually
+    c[i] = a[i] + b[i];
 }
 
 _mm_free(a);
@@ -612,11 +615,11 @@ In general, Clang tries to copy the command line options of GCC, and so many of 
  
 ## Specifying The Target
 
-The next set of compiler options we will look at are those that specify our _target architecture_. As we've seen in this unit, there are many extensions to the x86(_64) instruction set, and different CPU models support different subsets of these extensions. While the compiler may be very sufficient at identifying vectorisable code, it will only be able to generate appropriate vector instructions if it knows that the CPU supports these instructions. 
+The next set of compiler options we will look at are those that specify our _target architecture_. As we've seen in this unit, there are many extensions to the x86(_64) instruction set, and different CPU models support different subsets of these extensions. While the compiler may be sufficient at identifying vectorisable code, it will only be able to generate appropriate vector instructions if it knows that the CPU supports these instructions. 
 
 We can specify our target architecture to GCC and Clang using the `-march=` compiler flag. Again, we'll not cover the complete list of architectures here, but we'll look at a few specific examples. 
 
-Perhaps the simplest option is to use the `-march=native` option, which will allow GCC to determine the processor type at compilation time and tune for its specific instruction subsets. 
+Perhaps the simplest option is to use the `-march=native` option, which will allow GCC to determine the processor type at compilation time and tune for its specific instruction subsets. Assuming the code is run on the same architecture, this will be sufficient for most cases.
 
 Alternatively, we can specify specific architectures such as `-march=cascadelake` (for an Intel Cascade Lake processor), or `-march=znver3` (for an AMD Zen 3 processor).
 

@@ -50,7 +50,7 @@ It should be noted that while individual nodes are ccNUMA-like shared memory sys
 
 # The Message Passing Interface
 
-The Message Passing Interface (MPI) is a portable message passing standard designed for distributed-memory parallel computers. The standard (version 4.0) currently defines an API with almost 500 functions, in C and Fortran (support for Fortran 2008 was added in the MPI 3.0 standard, while the C++ bindings were deprecated).
+The Message Passing Interface (MPI) is a portable message passing standard designed for distributed-memory parallel computers. The standard (version 5.0) currently defines an API with over 500 functions, in C and Fortran (support for Fortran 2008 was added in the MPI 3.0 standard, while the C++ bindings were deprecated).
 
 Today, there are numerous implementations of the MPI standard available. Notable examples include the open-source implementations OpenMPI, MPICH, and MVAPICH, and the vendor-developed implementations Intel MPI, Cray MPI and bullx MPI (note that many of these vendor-developed implementations are based on an open-source implementation).
 
@@ -219,7 +219,7 @@ MPI handles this by having a data type argument in most function specifications.
 <div class="table-wrapper" markdown="block">
 
 | **MPI Type** | **C Type**      |
-| `MPI_CHAR`   | `signed char`   |
+| `MPI_CHAR`   | `char`   |
 | `MPI_INT`    | `signed int`    |
 | `MPI_LONG`   | `signed long`   |
 | `MPI_FLOAT`  | `float`         |
@@ -263,7 +263,7 @@ In order to send a particle from one process to another, a custom type must be d
 MPI_Datatype mpi_particle_t;
 
 int blocklengths[3] = { 3, 1, 4 };
-int displacements[3] = { 0, offsetof(struct particle_t, cell_id), offsetof(struct particle_t, weight) };
+MPI_Aint displacements[3] = { 0, offsetof(struct particle_t, cell_id), offsetof(struct particle_t, weight) };
 MPI_Datatype types[3] = { MPI_DOUBLE, MPI_INT, MPI_DOUBLE };
 
 MPI_Type_create_struct(3, blocklengths, displacements, types, &mpi_particle_t);
@@ -294,8 +294,8 @@ MPI_Type_free(&my_column);
 
 In this example, we've created a new data type that will contain 10 blocks, each with a size of 1 data type (in this case 1 double), strided by 10 elements. On a 10 &times; 10 matrix this would correspond to a column (i.e. one value in every 10). 
  
-![Conceptual layour of a 10 x 10 array in C](../../assets/unit-6/2d-array-col.png){: style="background-color: white" }  
-_**Figure 5:** The conceptual layout of a 10 &times; 10 2D array in C_
+![Conceptual layout of a 10 x 10 array in C](../../assets/unit-6/2d-array-col.png){: style="background-color: white" }  
+_**Figure 4:** The conceptual layout of a 10 &times; 10 2D array in C_
 {: style="color:gray; font-size: 90%; text-align: center;" }
 
 Using our new MPI data type, we can send any column by using the pointer address `&(my_matrix[0][col])`. This will start our call at an offset column, which will then be strided by 10 for each value.
@@ -340,7 +340,7 @@ if (rank == 0) {
 
 In many cases, point-to-point communications are used to exchange border information (e.g. a "halo-exchange") between nearest neighbours. A common pattern in such applications is to call an `MPI_Send()`, followed immediately by an `MPI_Recv()`.
 
-However, beware! In most MPI implementations it is likely that the `MPI_Send()` call will return as soon as the data has been moved into an internal send buffer; but in some implementations the send may be fully synchronous and may block until a matching receive call is issued. In this case, the application will **deadlock** (since all processes will block on their send call before issuing their receive call).  
+However, beware! In most MPI implementations it is likely that, for small messages, the `MPI_Send()` call will return as soon as the data has been moved into an internal send buffer; but in some implementations, and for larger messages, the send may be fully synchronous and may block until a matching receive call is issued. In this case, the application will **deadlock** (since all processes will block on their send call before issuing their receive call).
 
 We can resolve this potential issue in a few different ways. One simple solution is that we could use an `if (rank % 2 == 0)` statement to ensure that all even numbered ranks call send before receive and all odd numbered ranks call receive before send, ensuring there's always a process expecting to receive data. 
  
@@ -354,14 +354,14 @@ int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, int 
 
 This function combines the arguments for a send and a receive into a single function call, where the MPI library can handle the potential for deadlock.  
 
-For example, in a 1D decomposition, where each process holds a 10 &times; 10 data array (10 &times; 12 with "ghost cells"), a halo exchange takes place in two steps. First, each process sends its final column to the process to the right (and stores it in the ghost cells of that process). Then each process sends its first column to the process to the left (and again stores this in the ghost cells). The process is demonstrated in Figures 6 and 7, below. 
+For example, in a 1D decomposition, where each process holds a 10 &times; 10 data array (10 &times; 12 with "ghost cells"), a halo exchange takes place in two steps. First, each process sends its final column to the process to the right (and stores it in the ghost cells of that process). Then each process sends its first column to the process to the left (and again stores this in the ghost cells). The process is demonstrated in Figures 5 and 6, below. 
  
 ![The first step of a 1D halo exchange](../../assets/unit-6/halo-exchange-right.png){: style="background-color: white" }  
-_**Figure 4:** Step one of a 1D halo exchange_
+_**Figure 5:** Step one of a 1D halo exchange_
 {: style="color:gray; font-size: 90%; text-align: center;" }
 
 ![The second step of a 1D halo exchange](../../assets/unit-6/halo-exchange-left.png){: style="background-color: white" }  
-_**Figure 5:** Step two of a 1D halo exchange_
+_**Figure 6:** Step two of a 1D halo exchange_
 {: style="color:gray; font-size: 90%; text-align: center;" } 
 
 The implementation of this halo exchange requires a custom MPI data type in C (since we're exchanging columns as above), and we have to calculate the rank of our neighbours to the left and right, taking account of if we're the first or last process. The process of exchanging these columns is then simply a matter of using two send-receive calls.
@@ -387,7 +387,7 @@ int right = (rank + 1) >= size ? 0 : rank + 1;
 // exchange column 1 with ghost column 11
 MPI_Sendrecv(&my_matrix[0][1], 1, my_column, left, 0, &my_matrix[0][11], 1, my_column, right, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 // exchange column 10 with ghost column 0
-MPI_Sendrecv(&my_matrix[0][10], 1, my_column, left, 0, &my_matrix[0][0], 1, my_column, right, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+MPI_Sendrecv(&my_matrix[0][10], 1, my_column, right, 0, &my_matrix[0][0], 1, my_column, left, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 ```
 
 In the case where your boundaries are not cyclic, you can still use `MPI_Sendrecv()` operations (even though ranks _0_ and _N-1_ will not have neighbours to the left and right, respectively). Instead, if you can provide the special value `MPI_PROC_NULL`, the operation will still complete but no information will be sent. 
@@ -473,15 +473,16 @@ int main(int argc, char *argv[]) {
             printf("I'm rank %d, my data is: ", rank);
             for (int j = 0; j < 10; j++) printf("%lf, ", my_data[j]);
             printf("\n");
-            MPI_Barrier(MPI_COMM_WORLD);
         }
     }
+    MPI_Barrier(MPI_COMM_WORLD);
+ 
 
     if (rank == size-1) {
         // allocate memory for the gather on rank (size-1)
         data = malloc(sizeof(double) * 10 * size);
     }
-    // gather 10 doubled from each process and place them into the data array of rank (size-1)
+    // gather 10 doubles from each process and place them into the data array of rank (size-1)
     MPI_Gather(my_data, 10, MPI_DOUBLE, data, 10, MPI_DOUBLE, size-1, MPI_COMM_WORLD);
 
     if (rank == size-1) {
@@ -592,7 +593,7 @@ int main(int argc, char *argv[]) {
 While most collective operations can be implemented manually using point-to-point operations, collective operations are usually optimised in the MPI library. For example, reductions can be implemented hierarchically (rather than having every process send a message to every other process). 
  
 ![Hierarchical structure of an Allreduce call](../../assets/unit-6/mpi-reduction.png){: style="background-color: white" }  
-_**Figure 6:** A hierarchical MPI Allreduce_
+_**Figure 7:** A hierarchical MPI Allreduce_
 {: style="color:gray; font-size: 90%; text-align: center;" }
 
 The figure above demonstrates how an Allreduce operation can be completed by 9 processes with minimal communication overhead. Compared to each process sending data to P<sub>0</sub>, followed by a reduction and a broadcast, this communication pattern is significantly more efficient. The underlying implementation of MPI collectives is vendor and release specific (and in some cases relies on specialised hardware and proprietary algorithms). Nonetheless, MPI collectives should always be favoured over alternatives. 
@@ -603,7 +604,7 @@ One final note, is that collective calls are **blocking**, and so often act as s
 
 # Parallel I/O
      
-The MPI API contains almost 500 function -- far more than we have the time or space to cover. But before we move on, we'll briefly cover a few more of those functions, specifically targeted at performing file I/O in parallel. 
+The MPI API contains over 500 functions -- far more than we have the time or space to cover. But before we move on, we'll briefly cover a few more of those functions, specifically targeted at performing file I/O in parallel. 
  
 > **Note** 
 >
@@ -613,7 +614,7 @@ The MPI API contains almost 500 function -- far more than we have the time or sp
 There are numerous approaches to writing output from parallel processes, and they can broadly be categorised into three approaches: N-to-N, N-to-M and N-to-1. 
  
 ![The three approaches to writing files in parallel: N to N, N to M, and N to 1](../../assets/unit-6/parallel-io.png){: style="background-color: white" }  
-_**Figure 7:** Three approaches to writing files in parallel_
+_**Figure 8:** Three approaches to writing files in parallel_
 {: style="color:gray; font-size: 90%; text-align: center;" }
   
 The simplest approach to implement is perhaps N-to-N, where each process writes its own file. This can be achieved using simple POSIX file I/O operations. However, this may overwhelm a file system at scale (lots of metadata operations, e.g., file create, file close, file size queries, etc.), and may also make it difficult to manage for other applications. In particular loading from N files on a future application run (which may run on a different number of processes) may be more complicated, and parsing data spread across many files may be more complex for analysis tools. 

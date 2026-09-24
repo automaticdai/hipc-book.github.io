@@ -131,7 +131,7 @@ _**Figure 6:** CUDA Parallel Thread Architecture_
 
 ### _(1) Thread and Thread Block_
 
-A CUDA program consists of a host program, which includes one or more sequential _threads_ running on the host, and one or more parallel kernels (functions that execute on the device) optimised for parallel GPU execution. Only one kernel runs at a time, and it is executed by a set of lightweight parallel threads. For efficient resource allocation (e.g., minimising redundant computation and reducing shared memory bandwidth), threads are organised into thread blocks. A _thread block_ is a programming abstraction representing a group of threads that can execute either serially or in parallel.
+A CUDA program consists of a host program, which includes one or more sequential _threads_ running on the host, and one or more parallel kernels (functions that execute on the device) optimised for parallel GPU execution. Within an SM only one kernel runs at a time, and it is executed by a set of lightweight parallel threads. For efficient resource allocation (e.g., minimising redundant computation and reducing shared memory bandwidth), threads are organised into thread blocks. A _thread block_ is a programming abstraction representing a group of threads that can execute either serially or in parallel.
 
 ### _(2) Grid_
 
@@ -546,7 +546,7 @@ int main(int argc, char *argv[]) {
 
     // Executing kernel
     int block_size = 256;
-    int grid_size = N / block_size;
+    int grid_size = (N + block_size - 1) / block_size;
     vector_add<<<grid_size,block_size>>>(d_out, d_a, d_b, N);
 
     // Transfer data back to host memory

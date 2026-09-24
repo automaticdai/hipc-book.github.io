@@ -48,7 +48,7 @@ Scientific computing and numerical simulation are now indispensable tools in man
 
 ## In the beginning...
 
-The first general-purpose computer was the **Electronic Numerical Integrator and Computer (ENIAC)**, built in 1939. The machine could perform between 300 and 500 floating-point operations per second (or FLOP/s). Due to the prevalence and importance of floating-point operations in modern day science applications, the FLOP rate is the standard way in which modern supercomputer performance is assessed.
+The first general-purpose computer was the **Electronic Numerical Integrator and Computer (ENIAC)**, built in 1945. The machine could perform between 300 and 500 floating-point operations per second (or FLOP/s). Due to the prevalence and importance of floating-point operations in modern day science applications, the FLOP rate is the standard way in which modern supercomputer performance is assessed.
 
 ![The ENIAC](../../assets/unit-1/Eniac.jpg)  
 _**Figure 1:** ENIAC -- the first programmable, electronic, general-purpose digital computer_
@@ -74,13 +74,13 @@ _**Figure 3:** Seymour Cray with a Cray-1 supercomputer_
 
 The Cray-1 was the first Cray machine to use integrated circuits (ICs), and contained over 60 miles of wire, with no segment longer than 3 inches to minimise signal delays (hence the curved design!). The Cray-1 was the first supercomputer to successfully implement a vector processor design, and was capable of performing 160 million floating-point operations per second (i.e. 160 MFLOP/s).
 
-Having initially believed they would sell perhaps a dozen systems, and having priced the system accordingly, over 100 were sold.
+Having initially believed they would sell perhaps a dozen systems, and having priced the system accordingly, almost 100 were sold.
 
 Between 1976 and 1985, the iconic design of the Cray-1 was reused for the upgraded **Cray-1A**, **Cray-1S** and **Cray-1M** systems, with each system improving the memory capacity or processor performance. In 1983, the **Cray X-MP** was announced as a "cleaned up" Cray-1 system with a quad-processor. Capable of 800 MFLOP/s, it was the world's fastest computer from 1983 to 1985.
 
 In 1985, the Cray X-MP was replaced as the fastest computer by the **Cray-2**, the first supercomputer of the Gigascale Era (capable of performing 1.9 GFLOP/s).
 
-The Cray-2 was a quad-processor, liquid cooled computer. The system was cooled by Fluorinert, which was pumped around the system under pressure, and then cooled outside the processor box in a unique "waterfall" cooling system. This lead to a number of jokes ("no fishing" signs, etc.) and the system being nicknamed "Bubbles".
+The Cray-2 was a quad-processor, liquid cooled computer. The system was cooled by Fluorinert, which was pumped around the system under pressure, and then cooled outside the processor box in a unique "waterfall" cooling system. This led to a number of jokes ("no fishing" signs, etc.) and the system being nicknamed "Bubbles".
 
 ![Cray-2](../../assets/unit-1/Cray-2.jpeg)  
 _**Figure 4:** NERSC's Cray-2 and Cooling "waterfall"_
@@ -100,7 +100,7 @@ In 1993, Fujitsu's **Numerical Wind Tunnel (NWT)** became the fastest supercompu
 _**Figure 5:** Numerical Wind Tunnel_
 {: style="color:gray; font-size: 90%; text-align: center;"}
 
-The Numerical Wind Tunnel was the second supercomputer to top the newly created TOP500 rankings (following the **CM/5** at LANL). Recognising a need to generate meaningful statistics about supercomputers, [Hans Meuer (University of Mannhein)](https://en.wikipedia.org/wiki/Hans_Meuer) joined with [Jack Dongarra (University of Tennessee)](https://en.wikipedia.org/wiki/Jack_Dongarra), and later Erich Strohmaier (National Energy Research Scientific Computing Center) and Horst Simon (Lawrence Berkeley National Laboratory), in creating the TOP500 supercomputer rankings. The TOP500 rankings are released twice a year, at the International Supercomputing Conference (ISC) in May/June, and then at the Supercomputing Conference (SC) in November. The rankings are based on the performance achieved running Jack Dongarra's [LINPACK benchmark](https://netlib.org/linpack/), which solves a dense system of linear equations, $Ax = b$. 
+The Numerical Wind Tunnel was the second supercomputer to top the newly created TOP500 rankings (following the **CM/5** at LANL). Recognising a need to generate meaningful statistics about supercomputers, [Hans Meuer (University of Mannheim)](https://en.wikipedia.org/wiki/Hans_Meuer) joined with [Jack Dongarra (University of Tennessee)](https://en.wikipedia.org/wiki/Jack_Dongarra), and later Erich Strohmaier (National Energy Research Scientific Computing Center) and Horst Simon (Lawrence Berkeley National Laboratory), in creating the TOP500 supercomputer rankings. The TOP500 rankings are released twice a year, at the International Supercomputing Conference (ISC) in May/June, and then at the Supercomputing Conference (SC) in November. The rankings are based on the performance achieved running Jack Dongarra's [LINPACK benchmark](https://netlib.org/linpack/), which solves a dense system of linear equations, $Ax = b$. 
 
 Where previously, supercomputers were ranked based on the theoretical maximum performance (i.e. clock speed $\times$ max FLOPs per clock cycle $\times$ number of CPUs), they could instead be ranked based on the _achieved_ performance on a "representative" problem -- including effects such as memory performance, interconnect performance, etc.
 
@@ -112,7 +112,7 @@ Intel's next foray to the top of the rankings was in 1997, when they broke the T
 _**Figure 6:** ASCI Red inside Sandia National Laboratories_ 
 {: style="color:gray; font-size: 90%; text-align: center;"}
 
-ASCI Red consisted of 104 cabinets, with 76 compute nodes in each cabinet alongside switches and storage (total of almost 8,000 compute CPUs). Each compute node had an Intel Pentium Pro processor running at 200 MHz. In 1999, the processors were upgraded to specially packaged Pentium II Xeon processors, pushing its performance to 3.1 TFLOP/s.
+ASCI Red consisted of 104 cabinets, with 76 of those cabinets containing compute nodes, and the remaining 28 containing switches and storage (total of over 9000 compute CPUs). Each compute node had two Intel Pentium Pro processors running at 200 MHz. In 1999, the processors were upgraded to specially packaged Pentium II Xeon processors, pushing its performance to 3.1 TFLOP/s.
 
 ASCI Red held on to the top spot until 2000, when it was briefly displaced by IBM's **ASCI White** system, installed at LLNL.
 
@@ -136,7 +136,7 @@ In 2008 **IBM Roadrunner** became the first supercomputer to break the PetaFLOP/
 
 In contrast to many of the large homogeneous systems that came before, Roadrunner was an AMD Opteron-powered system with IBM PowerXCell accelerators connected to each core, making it perhaps the first _modern_ heterogeneous system. This heterogeneous approach has continued ever since, with a growing proportion of the fastest supercomputers in the world making use of highly-specialised computational accelerators (e.g. GPUs) alongside traditional multi-CPU hosts.
 
-Roadrunner was displaced at the top of the rankings in 2010 by the Chinese supercomputer, **Tianhe-1A ("Milk Way")** -- the first Chinese system to achieve the #1 ranking. Tianhe-1A was a 7,168 node system, with each node featuring two Intel Xeon X5670 6-core processors and a single NVIDIA Tesla M2050 GPU, achieving 2.57 PFLOP/s.
+Roadrunner was displaced at the top of the rankings in 2010 by the Chinese supercomputer, **Tianhe-1A ("Milky Way")** -- the first Chinese system to achieve the #1 ranking. Tianhe-1A was a 7,168 node system, with each node featuring two Intel Xeon X5670 6-core processors and a single NVIDIA Tesla M2050 GPU, achieving 2.57 PFLOP/s.
 
 In June 2011, Tianhe-1A was overtaken by the **K-Computer** -- a Japanese 10 PFLOP/s homogeneous supercomputer, using Fujitsu SPARC64fx processors and a proprietary Torus Fusion (Tofu) interconnect.
 
@@ -144,7 +144,7 @@ In June 2011, Tianhe-1A was overtaken by the **K-Computer** -- a Japanese 10 PFL
 _**Figure 9:** K-Computer_
 {: style="color:gray; font-size: 90%; text-align: center;"}
 
-K-Computer comprised of 88,128 2.0 GHz eight-core processors, for a total of 705,024 cores, with each node being interconnected by Tofu's six-dimensional mesh/torus topology. The system drew 10 MW of power (compared to the 115 kW of a Cray-1). Even when the system was decommissioned in 2018, it was still only 18th in the TOP500 list and achieved a performance efficiency of 93% (i.e. achieved performance vs. theoretical max) on LINPACK.
+K-Computer comprised of 88,128 2.0 GHz eight-core processors, for a total of 705,024 cores, with each node being interconnected by Tofu's six-dimensional mesh/torus topology. The system drew 10 MW of power (compared to the 115 kW of a Cray-1). Even when the system was decommissioned in 2019, it was still only 18th in the TOP500 list and achieved a performance efficiency of 93% (i.e. achieved performance vs. theoretical max) on LINPACK.
 
 The United States regained the top spot in the TOP500 in June 2012 with the third iteration of the IBM BlueGene. **IBM Sequoia** was a BlueGene/Q system installed at LLNL, and achieved a peak performance of 17.17 PFLOP/s. Like previous BlueGene systems it achieved this performance using lower power, massively parallel processors -- with 98,304 compute nodes, each with a 16-core IBM A2 processor, for 1,572,864 processor cores in total.
 
@@ -156,13 +156,13 @@ _**Figure 10:** Titan_
 
 In June 2013, the **Tianhe-2** system achieved 33.86 PFLOP/s, approximately twice the performance of Titan and Sequoia. It did so using Intel Xeon CPUs, alongside Intel's Xeon Phi many-core co-processor architecture (Knights Corner).
 
-China surpassed its own Tianhe-2 system in 2016 with the **Sunway TaihuLight** supercomputer, achieving 93 PFLOP/s with a custom Chinese-designed Sunway many-core CPU in 2016. The system consists of 40,960 processors, with each processor containing 256 processing cores.
+China surpassed its own Tianhe-2 system in 2016 with the **Sunway TaihuLight** supercomputer, achieving 93 PFLOP/s with a custom Chinese-designed Sunway many-core CPU in 2016. The system consists of 40,960 processors, with each processor containing 256 compute cores.
 
 The TOP500 crown returned to the United States in 2018, when the heterogeneous **Summit** supercomputer was installed at ORNL. Alongside Summit, the similarly architected **Sierra**, at LLNL, also took the #2 spot. Both Summit and Sierra are IBM systems, with IBM Power9 CPUs connected to NVIDIA V100 GPUs; in the case of Summit there are 2 CPUs and 6 GPUs per node, and in Sierra there are 2 CPUs and 4 GPUs per node. Summit can achieve a peak performance of 148 PFLOP/s, while Sierra can achieve 95 PFLOP/s.
 
 <iframe width="560" height="315" class="center" src="https://www.youtube.com/embed/OoajYVQuIhA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="allowfullscreen"></iframe><br/>
 
-In June 2020, the successor to the K-Computer took the TOP500 crown and retained it up to 2021. **Fugaku** is built with the Fujitsu A64FX microprocessor (the first ARM-based architecture to achieve the #1 ranking), with nodes interconnected with the Tofu interconnect. Similar to previous Japanese #1 supercomputers, Fugaku outperformed rival supercomputers considerably when installed, beating Summit and Sierra by almost three times. Currently, it has been able to achieve 450 PFLOP/s on the LINPACK benchmark. Alongside the TOP500 ranking, it was also the first supercomputer to top the Graph500, HPL-AI and HPCG rankings simultaneously.
+In June 2020, the successor to the K-Computer took the TOP500 crown and retained it up to 2021. **Fugaku** is built with the Fujitsu A64FX microprocessor (the first ARM-based architecture to achieve the #1 ranking), with nodes interconnected with the Tofu interconnect. Similar to previous Japanese #1 supercomputers, Fugaku outperformed rival supercomputers considerably when installed, beating Summit and Sierra by almost three times. Currently, it has been able to achieve 442 PFLOP/s on the LINPACK benchmark. Alongside the TOP500 ranking, it was also the first supercomputer to top the Graph500, HPL-AI and HPCG rankings simultaneously.
 
 ![Fugaku](../../assets/unit-1/fugaku.jpeg)  
 _**Figure 11**: Fugaku_
@@ -174,13 +174,17 @@ _**Figure 11**: Fugaku_
 
 <iframe width="560" height="315" class="center" src="https://www.youtube.com/embed/kTlLQ53Jzcw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br/>
 
-We are now in the era of Exascale computing. There are currently three publicly acknowledged Exascale systems, all operated by the US Department of Energy (DoE). The fastest machine in the world currently is **El Capitan** at LLNL, followed by **Frontier** at ORNL, and **Aurora** at ANL. 
+We are now in the era of Exascale computing. There are currently five publicly acknowledged Exascale systems. Three are operated by the US Department of Energy (DoE), one is operated by EuroHPC, and one is operated by the National Supercomputing Centre in Shenzhen, China.
 
-Frontier was the first Exascale system, entering the TOP500 in June 2022, achieving 1.1 EFLOP/s. It is an HPE Cray system, consisting of 9,472 AMD EPYC CPUs and 37,888 AMD Radeon Instinct MI250X GPUs. 
+**Frontier** was the first Exascale system, entering the TOP500 in June 2022, achieving 1.1 ExaFLOP/s (now 1.3 ExaFLOP/s). It is an HPE Cray system, consisting of 9,472 AMD EPYC CPUs and 37,888 AMD Instinct MI250X GPUs. 
 
-Aurora surpassed an ExaFLOP/s in the June 2024 list. Like Frontier, it is an HPE Cray "Shasta" system, but consists of 21,248 Intel "Sapphire Rapids" Xeon CPUs and 63,744 Intel "Ponte Vecchio" Xe GPUs.
+**Aurora** surpassed an ExaFLOP/s in the June 2024 list. Like Frontier, it is an HPE Cray "Shasta" system, but consists of 21,248 Intel "Sapphire Rapids" Xeon CPUs and 63,744 Intel "Ponte Vecchio" Xe GPUs.
 
-El Capitan first topped the November 2024 list, posting a peak performance of 1.74 ExaFLOP/s. Again, it is an HPE Cray system, consisting of 42,808 AMD Instinct MI300A APUs (Accelerated Processing Unit).
+**El Capitan** first topped the November 2024 list, posting a peak performance of 1.74 ExaFLOP/s (since improved to 1.81 ExaFLOP/s). Again, it is an HPE Cray system, consisting of 42,808 AMD Instinct MI300A APUs (Accelerated Processing Unit).
+
+In November 2025, EuroHPC's **JUPITER Booster** system entered the list, with an achieved peak performance of 1.0 ExaFLOP/s. JUPITER takes a similar approach to El Capitan with nodes consisting of Grace Hopper "Superchips" (each chip contains a 72-core Grace GPU with a Hopper GPU).
+
+The **LineShine** system surpassed 2 ExaFLOP/s in the June 2026 list, and is currently the fastest acknowledged system in the world, with an achieved peak of 2.2 ExaFLOP/s. In contrast to the other Exascale systems, LineShine is an homogeneous platform, consisting of of 45,000 custom 304-core CPUs.
 
 ![Frontier](../../assets/unit-1/frontier.jpg)  
 _**Figure 12**: Frontier_
@@ -192,7 +196,7 @@ Like previous leaps in HPC capability, Exascale computing will enable scientists
 
 > **Further Reading**
 > 
-> * [DOE Explains Exascale Computing](https://www.energy.gov/science/doe-explainsexascale-computing)
+> * [DoE Explains Exascale Computing](https://www.energy.gov/science/doe-explainsexascale-computing)
 > * [Why We Need Exascale Computing](https://www.huffpost.com/entry/why-we-need-exascale-computing_b_58c94f59e4b0009b23bd94c4/amp)
 > * [Three Chinese Exascale Systems Detailed at SC21: Two Operational and One Delayed](https://www.hpcwire.com/2021/11/24/three-chinese-exascale-systems-detailed-at-sc21-two-operational-and-one-delayed/)
 {: .block-tip }
@@ -284,7 +288,7 @@ _**Table 2:** Graph500 in June 2025_
 
 ## HPL-MxP
 
-In recognising the recent emergence of AI workloads on HPC systems, the HPL-MxP rankings were introduced in 2019 (as HPC-AI initially, before becoming the HPC-MxP Mixed Precision Benchmark in 2022). The HPL-MxP benchmark strives to unite traditional HPC workloads with AI workloads, and it does this by performing a combination of LINPACK-like double-precision calculations alongside low-precision AI-like calculations. The rankings are reported in FLOP/s, but are not limited to double-precision operations like LINPACK and HPCG.
+In recognising the recent emergence of AI workloads on HPC systems, the HPL-MxP rankings were introduced in 2019 (as HPL-AI initially, before becoming the HPL-MxP Mixed Precision Benchmark in 2022). The HPL-MxP benchmark strives to unite traditional HPC workloads with AI workloads, and it does this by performing a combination of LINPACK-like double-precision calculations alongside low-precision AI-like calculations. The rankings are reported in FLOP/s, but are not limited to double-precision operations like LINPACK and HPCG.
 
 The current #1 system is El Capitan, achieving 16.68 ExaFLOP/s on HPL-MxP.
 
@@ -295,7 +299,7 @@ The current #1 system is El Capitan, achieving 16.68 ExaFLOP/s on HPL-MxP.
 
 # Parallel Computation
 
-In 1966, Michael Flynn proposed a classification system for computer architectures. Flynn's Taxonomy has been used as the basis for the design of all modern processors since.
+In 1966, Michael Flynn proposed a classification system for computer architectures. Flynn's Taxonomy has been used to classify the design of all modern processors since.
 
 ## Flynn's Taxonomy
 
@@ -349,7 +353,7 @@ Should any particles leave the domain of a particular processor, a communication
 
 ## The Laws of Parallel Computing
 
-Now that we've discussed how applications may be parallelised across a system, its time to look at how much we might be able to gain, performance wise, through such parallelisations.
+Now that we've discussed how applications may be parallelised across a system, it's time to look at how much we might be able to gain, performance wise, through such parallelisations.
 
 While this module will mostly deal with algorithms and applications that are well parallelisable, there are some algorithms that are inherently serial; and large HPC applications often contain some serial portions. These often represent a bottleneck to achieving good performance. We can therefore reason about the possible performance increases we can get through parallelisation in the presence of some necessary serialisation.
 
@@ -502,11 +506,11 @@ In recognising the expansion of scientific computing to new domains such as AI, 
 
 {:start="7"}
 7. MapReduce -- process subsets of data independently and merge results
-8. Combinatorial Logic -- simple computation on large data sets, exhibiting bit-level parallelism
+8. Combinational Logic -- simple computation on large data sets, exhibiting bit-level parallelism
 9. Graph Traversal -- traverse objects and examine them as they are traversed
 10. Dynamic Programming -- compute solution by solving simpler overlapping subproblems
 11. Backtrack and Branch-and-Bound -- branch-and-bound algorithms used to solve search and global optimisation
-12. Construct Graphical Models -- construct graphs that represent random variables as nodes and conditionals as dependancies as edges
+12. Graphical Models -- construct graphs that represent random variables as nodes and conditionals as dependencies as edges
 13. Finite State Machines -- interconnected states which transition between one another
 
 > **Further Reading** 

@@ -49,13 +49,13 @@ _**Figure 2:** An UMA design_
 
 A **ccNUMA (cache-coherent Non-Uniform Memory Access)** system is one in which memory is physically distributed, but logically shared. The latency and bandwidth of a memory access depends on whether the CPU has a direct connection to the memory, or whether it must be fetched remotely.  
 
-In a NUMA system, each CPU has its own local memory address space, and can additionally access any other CPUs memory address space through an interconnect. 
+In a NUMA system, each CPU has its own local memory, and can additionally access any other CPUs memory address space through an interconnect. 
 
 ![A simple non-uniform memory access (NUMA) design](../../assets/unit-5/numa.png)   
 _**Figure 3:** A simple NUMA design_  
 {: style="color:gray; font-size: 90%; text-align: center;" }
 
-The NUMA design involved moving the memory controller on to the CPU, and was first introduced by AMD Opteron with "HyperTransport" in 2007, and into the Intel Nehalem architecture with "QuickPath" in 2008.  
+The NUMA design involved moving the memory controller on to the CPU, and was first introduced by AMD Opteron with "HyperTransport" in 2003, and into the Intel Nehalem architecture with "QuickPath" in 2008.  
 
 > **Further Reading** 
 >
@@ -119,7 +119,7 @@ void write_y() {
 
 Although the value of `x` in the struct is not changing, because the values are stored contiguously in memory the write function continually invalidates the cache line for other processors. This causes the cache line to be evicted and reloaded each time a read is issued. 
 
-In most cases, false sharing can be avoided or mitigated with simple code changes (or by the compiler!).
+In most cases, false sharing can be avoided or mitigated with simple code changes.
 
 #  The Fork-Join Model and POSIX Threads
 
@@ -133,7 +133,7 @@ _**Figure 4:** An example of a fork-join execution_
 
 In Figure 4, there are three parallel tasks to be executed, with each block being executed by a varying number of threads. First, the master thread creates two child threads, which rejoin after the first task, then it creates three threads, which rejoin after the second task, and then finally it creates a single additional thread for the third parallel task.
 
-In C, perhaps the quickest (and dirtiest!) way to implement a fork-join model is with the POSIX [`fork()`](https://man7.org/linux/man-pages/man2/fork.2.html) and [`wait()`](https://man7.org/linux/man-pages/man2/wait.2.html) functions from [`<unistd.h>`](https://man7.org/linux/man-pages/man0/unistd.h.0p.html). A call to `fork()` will create a child process by duplicating the calling process. The new process is referred to as the _child process_, while the calling process is the _parent process_. On the parent, the fork call will return the process ID of the child; while on the child process, the fork call will return zero. Each process runs in a seperate memory space (but the content is duplicated at the time of the fork call), and continues execution from the `fork()` command. 
+In C, perhaps the quickest (and dirtiest!) way to implement a fork-join model is with the POSIX [`fork()`](https://man7.org/linux/man-pages/man2/fork.2.html) and [`wait()`](https://man7.org/linux/man-pages/man2/wait.2.html) functions from [`<unistd.h>`](https://man7.org/linux/man-pages/man0/unistd.h.0p.html). A call to `fork()` will create a child process by duplicating the calling process. The new process is referred to as the _child process_, while the calling process is the _parent process_. On the parent, the fork call will return the process ID of the child; while on the child process, the fork call will return zero. Each process runs in a separate memory space (but the content is duplicated at the time of the fork call), and continues execution from the `fork()` command. 
 
 A simple example might look like this: 
 
@@ -244,7 +244,7 @@ void *perform_work(void *ptr) {
     int index = *((int *) ptr);
     printf("Thread %d has started\n", index);
     pthread_mutex_lock(&lock); // lock our mutex for the accumulation
-    my_val += index;
+    my_shared_val += index;
     pthread_mutex_unlock(&lock); // unlock our mutex
     return NULL;
 }
@@ -260,7 +260,7 @@ int main(int argc, char *argv[]) {
     ...
 
     pthread_mutex_destroy(&lock);
-    printf("The final value of my_val is: %d\n", my_val);
+    printf("The value of my_shared_val is: %d\n", my_shared_val);
     exit(0);
 }
 ```
@@ -357,7 +357,7 @@ Thread 0 has started
 The final value of my_val is: 7 
 ```
 
-Our compile line no longer requires the `-pthreads` option, and instead includes `-fopenmp` (some compilers may require `-omp`, `-fomp`, `-gomp`, `-lomp`, or other variants). The number of threads is also now specified by the environment variable `OMP_NUM_THREADS` (and will usually default to the total number of cores available if unset). But like earlier, there is no guarantee that the final value of `my_val` will be correct due to the non-deterministic nature of parallel execution without a critical section. 
+Our compile line no longer requires the `-pthread` option, and instead includes `-fopenmp` (some compilers may require `-qopenmp`, `-mp`, `-lomp`, or other variants). The number of threads is also now specified by the environment variable `OMP_NUM_THREADS` (and will usually default to the total number of cores available if unset). But like earlier, there is no guarantee that the final value of `my_val` will be correct due to the non-deterministic nature of parallel execution without a critical section. 
 
 **Note:** you can also specify the number of threads on the same line as the command, like so: 
 
@@ -400,9 +400,9 @@ Besides this, OpenMP can control the scope of other variables using attribute cl
 The following data sharing attribute clauses are available (and we'll look at some of them in more detail later): 
 
 _**shared**_: the data declared outside the parallel region is shared with each thread. By default all variables are shared (except loop iteration counters)  
-_**private**_: the data declared within a parallel region is private to each thread (and is not initialised before the parallel region)  
+_**private**_: the variable declared outside the parallel region is made available to each thread, but its value is not initialised, and any updates to the variable remain private to each thread  
 _**default**_: allows a programmer to specify the default sharing behaviour (shared or none, where none means that any variables to be shared must be explicitly listed under the shared list)  
-_**firstprivate**_: the same as private, except the variable is initialised with the initial value from the master thread
+_**firstprivate**_: the same as private, except the variable is initialised with the initial value from the master thread  
 _**lastprivate**_: the same as private, except that the original value is updated after the construct  
 _**reduction**_: a safe way of joining work from all threads
 
@@ -459,7 +459,7 @@ int main(int argc, char *argv[]) {
 
     // perform vector add
     double time = get_time();
-    for (i = 0; i < N; I+=8) {
+    for (i = 0; i < N; i+=8) {
         __m256 a_v = _mm256_load_ps(a+i);
         __m256 b_v = _mm256_load_ps(b+i);
         __m256 c_v = _mm256_add_ps(a_v, b_v);
@@ -603,7 +603,7 @@ For operations like this, OpenMP provides a more elegant solution. Take the foll
 #include <omp.h>
 
 int main(int argc, char *argv[]) {
-    int sum = 0;
+    long long sum = 0;
 
     #pragma omp parallel for
     for (int i = 0; i < 100000000; i++) {
@@ -655,12 +655,12 @@ In C/C++, the following reductions are provided in the OpenMP standard:
 | **Identifier** | **Initialiser**                                           | **Combiner**                                      |
 | `+`            | `omp_priv = 0`                                            | `omp_out += omp_in`                               |
 | `-`            | `omp_priv = 0`                                            | `omp_out += omp_in`                               |
-| `*`            | `omp_priv = 0`                                            | `omp_out *= omp_in`                               |
+| `*`            | `omp_priv = 1`                                            | `omp_out *= omp_in`                               |
 | `&`            | `omp_priv = ~ 0`                                          | `omp_out &= omp_in`                               |
 | `|`            | `omp_priv = 0`                                            | `omp_out |= omp_in`                               |
 | `^`            | `omp_priv = 0`                                            | `omp_out ^= omp_in`                               |
 | `&&`           | `omp_priv = 1`                                            | `omp_out = omp_in && omp_out`                     |
-| `||`           | `omp_priv = 0`                                            | `omp_out = omp_in && omp_out `                    |
+| `||`           | `omp_priv = 0`                                            | `omp_out = omp_in || omp_out `                    |
 | `max`          | `omp_priv = ` Smallest number in reduction list item type | `omp_out = (omp_in > omp_out) ? omp_in : omp_out` |
 | `min`          | `omp_priv = ` Largest number in reduction list item type  | `omp_out = (omp_in < omp_out) ? omp_in : omp_out` |
  
@@ -901,13 +901,13 @@ for (int i = 0; i < iters; i++) {
 } 
 ```
 
-In this example, regardless of the number of threads available to the application, this loop will only ever use 2. Less threads means less overhead, and thus this might improve the performance of a loop, without slowing down later loops that may benefit from more threads. 
+In this example, regardless of the number of threads available to the application, this loop will only ever use 2. Fewer threads means less overhead, and thus this might improve the performance of a loop, without slowing down later loops that may benefit from more threads. 
 
 ### Avoid implicit barriers 
 
 As was mentioned in the previous section, there are implicit barriers at the end of all parallel regions in OpenMP. This means that if some threads finish their work early, they will block until all threads have finished. In cases where this is not required, we can instruct threads not to wait and to continue their execution. 
 
-There is an explicit barrier at the end of any parallel region that cannot be removed, but we can remove the implicit barrier from a work-sharing construct with the `nowait` clause. Consider the `omp for` pragma in the following code sample: 
+There is an implicit barrier at the end of any parallel region that cannot be removed, but we can remove the implicit barrier from a work-sharing construct with the `nowait` clause. Consider the `omp for` pragma in the following code sample: 
 
 ```c
 int iters = 10;

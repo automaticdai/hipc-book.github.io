@@ -62,7 +62,7 @@ SIMD instructions can now be found on almost all modern CPUs -- as we'll see lat
 
 Up until the 1990s, supercomputing architectures were wildly different to commodity single-chip general-purpose microprocessors (which were invented in the 1970s). As these general-purpose CPUs matured, they began to see adoption in HPC systems. 
 
-Perhaps the most notable of these systems was **Beowulf** -- a system installed at NASA in 1994, that comprised of 16 motherboards with x86 processors, interconnected with ethernet. This "Network of Workstations" approach has continued ever since, with almost all modern supercomputers now predominantly built from off-the-shelf components. Following the work by Donald Becker and Thomas Sterling, these machines are commonly referred to as **Beowulf Clusters**. Since 2017, all of the TOP500 supercomputers use Beowulf methods.  
+Perhaps the most notable of these systems was **Beowulf** -- a system installed at NASA in 1994, that comprised of 16 motherboards with x86 processors, interconnected with ethernet. This "Network of Workstations" approach has continued ever since, with almost all modern supercomputers now predominantly built from off-the-shelf components. Following the work by Donald Becker and Thomas Sterling, these machines are commonly referred to as **Beowulf Clusters**. Today, almost all of the TOP500 supercomputers use Beowulf methods.  
 
 > **Further Reading**
 >
@@ -141,13 +141,13 @@ Exploiting superscalarity is very difficult and often requires careful optimisat
 
 Previously we have discussed vector processors, such as the Cray-1, where the same instruction can be applied to a vector of multiple items. In this way, CPUs can achieve _data parallelism_. 
 
-While SIMD execution was common in vector supercomputers, it did not make its way to the commodity market until 1996, when Intel's MMX instructions were added the their x86 architecture. SIMD is now a common feature in desktop and server CPUs. 
+While SIMD execution was common in vector supercomputers, it did not make its way to the commodity market until 1996, when Intel's MMX instructions were added to their x86 architecture. SIMD is now a common feature in desktop and server CPUs. 
  
 ![Comparison of SISD and SIMD with width 2](../../assets/unit-2/sisd-vs-simd.png){: style="background-color:white" }  
 _**Figure 5:** SISD vs SIMD (with width 2)_
 {: style="color:gray; font-size: 90%; text-align: center;" }
  
-The MMX instruction set has since been superseded by the SSE and AVX instruction sets on Intel's hardware. Each new generation of SIMD extensions brings new vectorised instructions, and ever increasing vector widths. Most modern Intel CPUs now implement the AVX-512 instruction set, with 512-bit vector registers. This allows instructions to operate on up to 8 double-precision (64-bit) floating-point values simultaneously. 
+The MMX instruction set has since been superseded by the SSE and AVX instruction sets on Intel's hardware. Each new generation of SIMD extensions brings new vectorised instructions, and ever increasing vector widths. Many modern Intel CPUs now implement the AVX-512 instruction set, with 512-bit vector registers. This allows instructions to operate on up to 8 double-precision (64-bit) floating-point values simultaneously. 
 
 We will look more closely at SIMD instruction sets in [Unit 4](../../lectures/4-on-core_parallelism/). 
 
@@ -163,7 +163,7 @@ Modern computers contain a hierarchy of memory, with each layer decreasing in si
 _**Figure 6:** The memory hierarchy_
 {: style="color:gray; font-size: 90%; text-align: center;" }
 
-Smaller, faster, on-chip memories serve as temporary data storage for holding copies of data that is soon to be used, bridging the performance gap between modern CPUs and main memory. A CPU typically only interacts with data in the registers, with data moved through the levels of cache as required. CPUs will attempt to "guess" which memory locations are likely to be required and will _prefetch_ data ready for subsequent instructions. Should a prefetch prove incorrect, a cache miss is triggered, causing the CPU to stall. Ensuring applications operate in a cache-efficient manner is vital for high performance. 
+Smaller, faster, on-chip memories serve as temporary data storage for holding copies of data that is soon to be used, bridging the performance gap between modern CPUs and main memory. A CPU typically only interacts with data in the registers, with data moved through the levels of cache as required. CPUs will attempt to "guess" which memory locations are likely to be required and will _prefetch_ data ready for subsequent instructions. Should a prefetch prove incorrect, a cache miss may be triggered, causing the CPU to stall. Ensuring applications operate in a cache-efficient manner is vital for high performance. 
 
 Modern CPUs typically have 3-4 levels of cache prior to main memory, and some of these levels of cache are shared between multiple cores. Recognising the growing gap between main memory performance and CPU performance, some manufacturers are introducing new levels to the memory hierarchy, such as high bandwidth memory (HBM). The size and speed of the caches must be carefully considered when designing a processor, since they occupy significant space on the processors themselves, and their cost increases as their performance and size increases. 
 
@@ -175,7 +175,7 @@ In the 1980s, there was a general move towards Reduced Instruction Set Computers
 
 Today, almost all CPUs use a RISC architecture at the lowest-level. Even though x86 is considered a CISC architecture, instructions are translated to RISC-like micro-ops on-the-fly. 
 
-#### Multicore and Multithreaded CPUs
+### Multicore and Multithreaded CPUs
 
 In recent years, due to the breakdown of Dennard scaling, CPU manufacturers have instead focussed on maintaining Moore's law through _multicore_ designs. Typically a CPU will feature multiple cores, where each core has a mixture of its own execution units and some shared execution units, alongside dedicated registers and a mixture of dedicated and shared caches. 
 
@@ -195,15 +195,15 @@ Additionally, each core is capable of simultaneously executing two threads. The 
 
 ### x86 and x86_64 
 
-x86 is a family of microprocessor architectures initially developed by Intel. The architectures origins are in the 16-bit Intel 8086, released in 1978. Intel's first 32-bit architecture was released in 1986 with the Intel 386 (released as the 80386). The 386 saw widespread adoption and was present in many of the workstations and personal computers of the time. 
+x86 is a family of microprocessor architectures initially developed by Intel. The architectures origins are in the 16-bit Intel 8086, released in 1978. Intel's first 32-bit architecture was released in 1985 with the Intel 386 (released as the 80386). The 386 saw widespread adoption and was present in many of the workstations and personal computers of the time. 
 
-The 64-bit instruction set, x86_64, was first released in 1999 and was originally created by AMD. This architecture is now widely implemented in CPUs from Intel and AMD that are present in the majority of personal computers, and supercomputers today. 
+The 64-bit instruction set, x86_64, was first announced in 1999 and was originally created by AMD. This architecture is now widely implemented in CPUs from Intel and AMD that are present in the majority of personal computers, and supercomputers today. 
 
 Over the years, many additions and extensions have been made to the instruction set, including (but by no means limited to): 
 
 * x87 floating-point instructions 
 * MMX, SSE (Streaming SIMD Extensions), SSE2, SSE3, SSE4, SSE 4.1, SSE 4.2 
-* AVX (Advanced Vector eXtensions), AVX2, AVX-512, AVX19, APX (Advanced Performance eXtensions)
+* AVX (Advanced Vector eXtensions), AVX2, AVX-512, AVX10, APX (Advanced Performance eXtensions)
 * Cryptographic instructions 
 
 Depending on how you count, the x86_64 architecture now contains somewhere between 1000 and 4000 instructions. 
@@ -243,7 +243,7 @@ So, now we know the basics of how modern CPUs work, how do we calculate the theo
 
 First, we make a basic assumption that in the best case we can perform 1 instruction per clock cycle. Of course, most instructions take multiple clock cycles, but (in the best case) we hope that these are amortised by superscalar architectures, pipelining, etc. 
 
-Then we can consider the number of FLOP/s we can perform _per instruction_. If we consider a [Fused Multiply-Add (FMA)](https://en.wikipedia.org/wiki/Multiply-accumulate_operation) instruction (e.g. $a = a + (b \times c)$), we can perform 2 FLOP/s per instruction (i.e. an addition and a multiplication). Add in SIMD instruction sets and we can perform multiple FMA instructions simultaneously on a vector of inputs. With SSE, with a vector width of 128 bits, we can perform 2 double-precision (64-bit) FMA instructions per clock cycle; with AVX/AVX-2, we can double this to 4 double-precision FMA instructions per cycle, and with AVX-512, we can double this again to 8. 
+Then we can consider the number of FLOPs we can perform _per instruction_. If we consider a [Fused Multiply-Add (FMA)](https://en.wikipedia.org/wiki/Multiply-accumulate_operation) instruction (e.g. $a = a + (b \times c)$), we can perform 2 FLOPs per instruction (i.e. an addition and a multiplication). Add in SIMD instruction sets and we can perform multiple FMA instructions simultaneously on a vector of inputs. With SSE, with a vector width of 128 bits, we can perform 2 double-precision (64-bit) FMA instructions per clock cycle; with AVX/AVX-2, we can double this to 4 double-precision FMA instructions per cycle, and with AVX-512, we can double this again to 8. 
 
 Next, we must consider whether there are multiple floating point units per core. In many cases, there will only be a single unit available, but in some HPC processors, we may be able to use simultaneous multithreading (SMT) to increase performance. A good example of this is in the [Intel Xeon Gold 6252](https://ark.intel.com/content/www/us/en/ark/products/192447/intel-xeon-gold-6252-processor-35-75m-cache-2-10-ghz.html) processor, where "# of AVX-512 FMA Units" is 2 (i.e. there are 2 AVX-512 FMA units available for each core).
 
@@ -327,7 +327,7 @@ By 2014 it was the most commonly used HPC interconnect in the Top500, before bei
 
 #### Ethernet
 
-Ethernet is a family of wired networking technologies that were introduced in 1980, and first standardised as IEEE 802.3. The original specification used coaxial cables as a shared medium and could operate at approximately 3 Mbit/s. Today, Ethernet is the dominant networking technology in homes, work places and data centres. 
+Ethernet is a family of wired networking technologies that were introduced in 1980, and first standardised as IEEE 802.3. The original specification used coaxial cables as a shared medium and could operate at approximately 10 Mbit/s. Today, Ethernet is the dominant networking technology in homes, work places and data centres. 
 
 Since the initial release of the IEEE 802.3 specification, Ethernet has evolved considerably. New protocols, advances in physical connectors, and the introduction of network switches has meant that Ethernet can now offer bandwidth in excess of 100 Gbit/s (Terabit Ethernet, TbE was specified in IEEE 802.3bs).
 
@@ -345,7 +345,7 @@ Recently, an HPC-specific Ethernet stack has been developed by HPE-Cray for use 
 > * Daniele De Sensi, Salvatore Di Girolamo, Kim H. McMahon, Duncan Roweth, and Torsten Hoefler. 2020. [An in-depth analysis of the slingshot interconnect](https://arxiv.org/abs/2008.08886). In _Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis_ (_SC '20_). IEEE Press, Article 35, 1-14.
 {: .block-tip } 
 
-### Toplogies
+### Topologies
  
 The performance of the interconnect in a distributed system is primarily dictated by the hardware in use and the topology (i.e. how nodes are connected to each other). While it would perhaps be most performant to connect each node to every other node through a single switch this is impractical for even small-to-medium sized clusters, and so typically some form of hierarchical topology must be used. 
 
@@ -375,7 +375,7 @@ Figure 8 shows a 2D torus, in a 3 &times; 3 grid; a switch (**s** in the figure)
 _**Figure 8:** A 3 x 3 torus network_
 {: style="color:gray; font-size: 90%; text-align: center;" }
 
-Torus interconnects are typically very high performance, with a minimal number of hops required between any two compute nodes. However, this comes with an associated financial cost. Recent examples of Torus interconnects can be found in systems such as the IBM BlueGene systems, and the Japanese K-Computer and Fugaku systems. 
+Torus interconnects are typically very high performance, with a minimal number of hops required between physically local compute nodes. However, this comes with an associated financial cost. Recent examples of Torus interconnects can be found in systems such as the IBM BlueGene systems, and the Japanese K-Computer and Fugaku systems. 
 
 #### Dragonfly
  
@@ -387,7 +387,7 @@ _**Figure 9:** A simple dragonfly topology_
 
 The Aries implementation of a Dragonfly topology uses 4 nodes to 1 router and 96 routers per group connected as an All-to-All mesh electrically; the inter-group connections are optical and can be tapered to reduce cost. 
 
-The average hop count for a Dragonfly is 5, this is where the node needs to communicate with a node from another group. The worst case could be higher than a fat tree for a sufficiently large network because the adaptive routing could make the data travel over multiple routers. 
+The worst-case hop count for a Dragonfly is 5, this is where the node needs to communicate with a node from another group. The worst case could be higher than a fat tree for a sufficiently large network because the adaptive routing could make the data travel over multiple routers. 
 
 Like Aries, the more recent Cray Slingshot interconnect defaults to a Dragonfly topology. 
 
@@ -424,13 +424,13 @@ HDDs are usually grouped using RAID (to improve performance and provide some red
 * **Object Storage Servers (OSS)**
 One or more OSTs are connected to one or more Object Storage Servers. The OSSs are directly responsible for reading and writing file data from and to the OSTs. 
 * **Metadata Server (MDS)** 
-Metadata (such as the directory tree, file permissions and file block locations) is either stored on a dedicated Metadata Server or is stored on the OSSs (as in IBM Spectrum Scale). The MDS is used by the clients to get file information and file structure, such that they can access the file stripes stored on the OSTs.
+Metadata (such as the directory tree, file permissions and file block locations) is either stored on a dedicated Metadata Server or is stored on the OSSs (as in IBM Storage Scale). The MDS is used by the clients to get file information and file structure, such that they can access the file stripes stored on the OSTs.
 * **Management Server (MGS)** 
 Finally, there are usually one or two Management Servers holding the server configurations. 
 
 ### Lustre
 
-The Lustre file system is used by many of the world's fastest and largest computers. The basic architecture of a Lustre file system is shown below. Although Lustre (up to version 2.4) uses only a single MDS, a fail-over MDS and MGS can be present. Additionally, multiple OSSs can be connected to common OSTs and this will again provide some fail-over capability. 
+The Lustre file system is used by many of the world's fastest and largest computers. The basic architecture of a Lustre file system is shown below. Up to version 2.4, Lustre used only a single MDS, though a fail-over MDS could be present. Since 2.4, Lustre supports multiple MDSs. Additionally, multiple OSSs can be connected to common OSTs and this will again provide some fail-over capability. 
  
 ![A simple Lustre file system configuration](../../assets/unit-2/lustre.png){: style="background-color:white" }  
 _**Figure 10:** Simplified example configuration of a Lustre file system_
@@ -442,9 +442,9 @@ When writing to a Lustre system, the server used for the first stripe is randomi
 
 To maintain consistency and allow correct concurrent access to the DFS, Lustre makes use of a distributed lock manager. Each OSS maintains its own file locks and so if two processes attempt to access the same chunk of a file, the OSS will only grant a lock to one of the clients (unless both accesses are read requests). 
 
-### IBM Spectrum Scale
+### IBM Storage Scale
 
-IBM's Spectrum Scale file system (formally known the General Parallel File System (GPFS)) operates similarly to Lustre; large files are distributed across multiple storage targets using stripes. However, Spectrum Scale differs from Lustre in that all OSSs are connected to all OSTs and MDTs, usually through a fibre channel switch. This provides additional resilience in that many more OSSs can fail before the file system must go offline. Figure 11 demonstrates an example Spectrum Scale configuration.  
+IBM's Storage Scale file system (formerly known the General Parallel File System (GPFS)) operates similarly to Lustre; large files are distributed across multiple storage targets using stripes. However, Spectrum Scale differs from Lustre in that all OSSs are connected to all OSTs and MDTs, usually through a fibre channel switch. This provides additional resilience in that many more OSSs can fail before the file system must go offline. Figure 11 demonstrates an example Spectrum Scale configuration.  
 
 ![A simple IBM Spectrum Scale file system](../../assets/unit-2/spectrumscale.png){: style="background-color:white" }  
 _**Figure 11:** Simplified example configuration of a Spectrum Scale file system_
@@ -456,7 +456,7 @@ Spectrum Scale makes use of a much smaller stripe size than Lustre (typically 16
 
 # Computational Accelerators
      
-Many of the newest, largest, and fasted HPC systems are heterogeneous systems, with compute provided by two or more different computational architectures. While this seems to be a new trend in supercomputing, the first supercomputer discussed in the previous unit (and previously in this unit) was heterogeneous in nature. 
+Many of the newest, largest, and fastest HPC systems are heterogeneous systems, with compute provided by two or more different computational architectures. While this seems to be a new trend in supercomputing, the first supercomputer discussed in the previous unit (and previously in this unit) was heterogeneous in nature. 
 
 You may recall that the CDC 6600 used a simplified CPU that was supported by a number of peripheral processors; these peripheral processors were able to perform additional work in the background, freeing up computational resources for mathematical operations. We would now consider such a system to be "heterogeneous". 
 
@@ -464,7 +464,7 @@ You may recall that the CDC 6600 used a simplified CPU that was supported by a n
 
 <iframe width="560" height="315" class="center" src="https://www.youtube.com/embed/s_4rIQmOw28" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe><br/>
 
-The modern era of accelerated computing arguable began with the first Petascale system, IBM Roadrunner. 
+The modern era of accelerated computing arguably began with the first Petascale system, IBM Roadrunner. 
 
 IBM Roadrunner was an AMD Opteron powered system with IBM PowerXCell 8i accelerators connected to each core. 
 
@@ -504,7 +504,7 @@ In 2007, inspired by Brook, NVIDIA created the CUDA (Compute Unified Device Arch
 
 <iframe width="560" height="315" class="center" src="https://www.youtube.com/embed/pPStdjuYzSI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe><br/>
 
-GPUs began to take a footing in the Top500 list from June 2010, with two systems appearing in the top 10 powered partially by NVIDIA or ATI Radeon GPUs. From these humble beginning, many of the largest systems are now powered by NVIDIA GPUs, and a number of planned Exascale systems will use GPUs from AMD (formerly ATI) and Intel. 
+GPUs began to take a footing in the Top500 list from June 2010, with two systems appearing in the top 10 powered partially by NVIDIA or ATI Radeon GPUs. From these humble beginning, many of the largest systems are now powered by NVIDIA GPUs, and a number of Exascale systems use GPUs from NVIDIA, AMD (formerly ATI) and Intel. 
 
 Currently applications must use alternative programming models (like CUDA or HIP) to target the GPU devices, or use compiler directives (or new programming models, such as those that will be discussed in a later unit). Data has to be transferred to the GPUs (usually over a PCIe bus), before the compute is offloaded, and the result transferred back to main memory. We'll look at how to program GPUs later in the course. 
 
@@ -521,7 +521,7 @@ One example of a co-processor that predates the PowerXCell processors was develo
 
 A more recent example of a co-processor grew out of Intel's cancelled GPU design -- codenamed "Larrabee". Ultimately launched in 2010, the Intel Xeon Phi product range saw considerable success in the TOP500 before its discontinuation in 2020. 
 
-The Xeon Phi was initially delivered as a PCIe connected accelerator card with many low-power, low-clock speed parallel cores that implemented the full x86-64 instruction set, alongside wide SIMD instructions (e.g. AVX-512). The Tianhe-2 supercomputer used Intel Xeon Phi "Knights Corner" co-processors to reach #1 in 2013. The Xeon Phi range has subsequently been discontinued, with Intel instead focussing on their new Xe GPUs, as used by the Aurora Exascale system. 
+The Xeon Phi was initially delivered as a PCIe connected accelerator card with many low-power, low-clock speed parallel cores that implemented the full x86-64 instruction set, alongside wide SIMD instructions (e.g. AVX). The Tianhe-2 supercomputer used Intel Xeon Phi "Knights Corner" co-processors to reach #1 in 2013. The Xeon Phi range has subsequently been discontinued, with Intel instead focussing on their new Xe GPUs, as used by the Aurora Exascale system. 
 
 The current TOP500 contains a number of other accelerators, primarily developed in Asia, such as the Matrix-2000 accelerator, the MN-Core Deep Learning accelerator, and the PEZY-SC many-core processor. You can find out more about these accelerators on [WikiChip](https://en.wikichip.org/wiki/). 
 

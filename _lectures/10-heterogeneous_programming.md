@@ -96,7 +96,7 @@ Frontier is a 1.1 ExaFLOP/s (achieved) system consisting of AMD EPYC "Trento" CP
 
 The Aurora system came online in 2023 and achieved 0.58 ExaFLOP/s in November 2023 (for approximately half of the machine). The machine officially broke the ExaFLOP barrier in June 2024, achieving 1.01 ExaFLOP/s. It is constructed with Intel CPUs and GPUs -- with each node containing two Intel Xeon Sapphire Rapids Max CPUs, with six Intel Xe Max (Ponte Vecchio) GPUs. 
 
-El Capitan is a 1.7 ExaFLOP/s (achieved) system that came online in November 2024. Like Frontier, El Capital consists of AMD hardware, making use of the MI300A APU (accelerated processing unit). The MI300A integrates an AMD CPU and GPU on a single device.
+El Capitan is a 1.7 ExaFLOP/s (achieved) system that came online in November 2024. Like Frontier, El Capitan consists of AMD hardware, making use of the MI300A APU (accelerated processing unit). The MI300A integrates an AMD CPU and GPU on a single device.
 
 > **Further Reading** 
 >
@@ -107,7 +107,7 @@ El Capitan is a 1.7 ExaFLOP/s (achieved) system that came online in November 202
 
 Exascale officially arrived in Europe in the November 2025 Top500 list. The JUPITER system is installed in Forschungszentrum Jülich, and when complete, will consist of two compute modules: a booster module and a cluster module.
 
-Its "booster module" has been installed and currently ranks #4, using NVIDIA GH200 Grace Hopper superchips. These chips embody a similar principle to El Capitans AMD MI300As, containing a Grace Arm Neoverse CPU and a Hopper NVIDIA GPU on a single die.
+Its "booster module" has been installed and currently ranks #4, using NVIDIA GH200 Grace Hopper superchips. These chips embody a similar principle to El Capitans AMD MI300As, containing a Grace Arm Neoverse CPU and a Hopper NVIDIA GPU on a single module.
 
 The "cluster module" will use the first European HPC Processor, _Rhea1_ by SiPearl. This module will provide high memory bandwidth for memory intensive workloads.
 
@@ -301,7 +301,7 @@ So far, the programming models we've looked at in this module target a single ar
 
 ## OpenMP 4.0+
  
-A 2015 update to the OpenMP standard introduced new directives aimed at heterogeneous programming. Specifically, the OpenMP 4.0 standard introduced directives for target regions (to support accelerators), and SIMD (to support SIMD parallelism). 
+A 2013 update to the OpenMP standard introduced new directives aimed at heterogeneous programming. Specifically, the OpenMP 4.0 standard introduced directives for target regions (to support accelerators), and SIMD (to support SIMD parallelism). 
 
 Compiler support for the latest features of the OpenMP standard often lags the standard, but the majority of compilers used in HPC now support a good subset of OpenMP 4.0+ directives (please refer to the list [here](https://www.openmp.org/resources/openmp-compilers-tools/)). 
 
@@ -335,7 +335,7 @@ void init_array();
 
 void init_array() {
     for (int i=0; i<N; i++)
-        array[i] = I;
+        array[i] = i;
 }
 
 int main(int argc, char *argv[]) {
@@ -364,7 +364,7 @@ for (int i = 0; i < 100; i++) {
 
 In this example, the `a` and `b` variables will be copied to the target device. Upon completion of the target region, the `c` array will be copied back to the host.
 
-There are numerous other map types that can be specified such as: `alloc` (memory is allocated on the host (nothing is copied)), `to`, `from`, `tofrom`, and `delete` (upon completion, the data is deleted). 
+There are numerous other map types that can be specified such as: `alloc` (memory is allocated on the device (nothing is copied)), `to`, `from`, `tofrom`, and `delete` (upon completion, the data is deleted). 
 
 Alternatively, for data that is allocated on device in a `declare target` region, you can use the `update` modifier to synchronise data. 
 
@@ -401,9 +401,9 @@ So for example, we may have something like:
 {
     // do something with a and b
 }
-#pragma omp update from(a[0])
+#pragma omp target update from(a[0])
     // modify a[0] on the host
-#pragma omp update to(a[0])
+#pragma omp target update to(a[0])
 #pragma omp target
 {
     // do more with a and b
@@ -814,9 +814,9 @@ So for example, to use a 2D array in RAJA you would first allocate the memory, t
 const int DIM = 2;
 double *array = new double[num_rows * num_cols];
 RAJA::View<double, RAJA::Layout<DIM>> array_view(array, num_rows, num_cols);
-Aview(0,0) = ...;
+array_view(0,0) = ...;
 ...
-delete array;
+delete[] array;
 ``` 
 
 > **Further Reading**
@@ -827,7 +827,7 @@ delete array;
 
 # The Future of Heterogeneous Computing
      
-[Professor Simon McIntosh-Smith](http://uob-hpc.github.io/SimonMS/) (University of Bristol) summarised in his Computing Insight UK 2021 (CUIK) keynote: 
+[Professor Simon McIntosh-Smith](http://uob-hpc.github.io/SimonMS/) (University of Bristol) summarised in his Computing Insight UK 2021 (CIUK) keynote: 
 
 * We're likely to rely on heterogeneous systems for a while, but these systems will be "moderately diverse, not extremely diverse" 
 * We'll likely see closer integration between CPUs and GPUs (i.e. in-package GPU, cache coherence, etc.) 
@@ -836,6 +836,6 @@ delete array;
 
 Heterogeneous systems typically offer us better performance per Watt, and possibly better performance per dollar, but they are more difficult to program. The first Exascale systems are CPU-GPU hybrid systems, using CPUs and GPUs from a variety of vendors (AMD, Intel, and NVIDIA), each with a preferred programming model (HIP/ROCm, OneAPI, and CUDA, respectively).  
 
-However, application developers and scientists do not want to redevelop their applications for each machine. This has led to a big push in HPC to develop programming models focussed on improving performance portability. Some of these programming models have subsequently been adopted by vendors (e.g. [Intel's DPC++](https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html) is based on SYCL), and some of the features in these programming models are being added to language specifications (e.g. [mdspan](https://github.com/kokkos/mdspan) is being added to C++23 from Kokkos).  
+However, application developers and scientists do not want to redevelop their applications for each machine. This has led to a big push in HPC to develop programming models focussed on improving performance portability. Some of these programming models have subsequently been adopted by vendors (e.g. [Intel's DPC++](https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html) is based on SYCL), and some of the features in these programming models are being added to language specifications (e.g. [mdspan](https://github.com/kokkos/mdspan) was added to C++23 from Kokkos).  
 
 However, in the ever-changing world of HPC, there is always more work to be done. 

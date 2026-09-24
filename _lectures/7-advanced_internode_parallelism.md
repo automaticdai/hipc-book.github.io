@@ -52,10 +52,10 @@ So for example:
 ```c 
 // to find your own coordinates
 int my_coords[2];
-MPI_Cart_coords(my_comm, my_rank, 2, my_coord);
+MPI_Cart_coords(my_comm, my_rank, 2, my_coords);
 
 // to find the rank of a neighbour at position (x, y-1)
-int neighbour_coords[2] = { my_coord[0], my_coord[1]-1 };
+int neighbour_coords[2] = { my_coords[0], my_coords[1]-1 };
 int neighbour_rank;
 MPI_Cart_rank(my_comm, neighbour_coords, &neighbour_rank);
 ```
@@ -207,10 +207,10 @@ MPI_Request requests[4];
 // exchange column 1 with ghost column 11
 // and exchange column 10 with ghost column 0
 MPI_Isend(&my_matrix[0][1], 1, my_column, left, 0, MPI_COMM_WORLD, &requests[0]);
-MPI_Isend(&my_matrix[0][10], 1, my_column, left, 1, MPI_COMM_WORLD, &requests[1]);
+MPI_Isend(&my_matrix[0][10], 1, my_column, right, 1, MPI_COMM_WORLD, &requests[1]);
 
 MPI_Irecv(&my_matrix[0][11], 1, my_column, right, 0, MPI_COMM_WORLD, &requests[2]);
-MPI_Irecv(&my_matrix[0][0], 1, my_column, right, 1, MPI_COMM_WORLD, &requests[3]);
+MPI_Irecv(&my_matrix[0][0], 1, my_column, left, 1, MPI_COMM_WORLD, &requests[3]);
 
 // do useful work while waiting for the non-blocking send and receives
 
@@ -231,7 +231,7 @@ For most communication functions, there is a non-blocking alternative, usually p
 
 At this point, all of the communications we've encountered in the MPI library have required active participation by senders and receivers. In point-to-point communications, both a sender and a receiver must be active in the communication; in a collective communication, all participating ranks must call a collective operation together.
 
-In some cases, this adds unnecessary synchronisation overhead that may harm performance, and may not be the most natural approach to a distributed problem. In version 3.1 of the MPI standard, one-sided operations were introduced, where data movement is decoupled from process synchronisation.
+In some cases, this adds unnecessary synchronisation overhead that may harm performance, and may not be the most natural approach to a distributed problem. In version 2.0 of the MPI standard, one-sided operations were introduced, where data movement is decoupled from process synchronisation.
 
 One-sided communications in MPI are based on the idea of an exposed window into a process's memory. Other processes can directly read from and write to this memory without requiring active participation. In some respects, this has the effect of making a distributed-memory application operate similarly to a shared-memory application.
 
@@ -277,7 +277,7 @@ int MPI_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_datat
             MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win);
 ```
 
-In the case of `MPI_Get`, the _getter_ specifies where data will be stored (`origin_addr`), how many items (`origin_count`) and of what type (`origin_datatype`) it would like, where it will get them from (`target_rank`), the offset into the window (`target_disp`), and the number and type of the items (`target_count` and `target_datatype`), and the window it is retrieving the data from (`win`). `MPI_Put` operates almost identically but is initiated by the other process.
+In the case of `MPI_Get`, the _getter_ specifies where data will be stored (`origin_addr`), how many items (`origin_count`) and of what type (`origin_datatype`) it would like, where it will get them from (`target_rank`), the offset into the window (`target_disp`), and the number and type of the items (`target_count` and `target_datatype`), and the window it is retrieving the data from (`win`). `MPI_Put` operates almost identically but is initiated by the writing process.
 
 Besides the basic get and put methods, there are a number of alternatives with additional functionality that will not be covered here. Examples include `MPI_Accumulate` and `MPI_Fetch_and_op`, which can additionally use an `MPI_Op` to perform a reduction on data, and `MPI_Compare_and_swap`, which can swap values in RMA windows based on a comparison.
 

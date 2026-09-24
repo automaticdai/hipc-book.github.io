@@ -161,7 +161,7 @@ Notable examples of a PGAS memory model can be found in **Coarray Fortran**, **U
 
 In contrast to the implicit communication in a PGAS model, **Message Passing** uses explicit communication to coordinate applications running in parallel. The **Message Passing Interface**, or **MPI**, is the de facto standard in HPC. 
 
-MPI was first devised in 1991, with the first standard published at the Supercomputing conference in 1993. It has been continually developed ever since, and is extensively used on almost every HPC system today. The MPI standard defines an API (application programming interface) that includes communicators, point-to-point messaging, collective operations, derived data types, and parallel file I/O. There are a number of implementations available, including **OpenMPI** (not to be confused with OpenMP!), **MPICH**, **Intel MPI**, and **IBM MPI**, to name just a few, and there are API bindings available in C, C++, and Fortran. 
+MPI was first devised in 1991, with the first standard published at the Supercomputing conference in 1993. It has been continually developed ever since, and is extensively used on almost every HPC system today. The MPI standard defines an API (application programming interface) that includes communicators, point-to-point messaging, collective operations, derived data types, and parallel file I/O. There are a number of implementations available, including **OpenMPI** (not to be confused with OpenMP!), **MPICH**, **Intel MPI**, and **IBM MPI**, to name just a few, and there are API bindings available in C/C++ and Fortran. 
 
 We'll look more closely at MPI later in this module. 
 
@@ -298,7 +298,7 @@ stop = clock(); // get number of ticks after loop
 duration = (double) ( stop - start ) / CLOCKS_PER_SEC;
 ```
 
-Alternatively, we could use the `clock_gettime()` function to record the time at the start and end of a block of code. `clock_gettime()` fills in a `timespec` structure with the current time of day in seconds and nanoseconds. For example, 
+Alternatively, we could use the `clock_gettime()` function to record the time at the start and end of a block of code. `clock_gettime()` fills in a `timespec` structure with the current time of a specific clock in seconds and nanoseconds (**Note**: below we use `CLOCK_MONOTONIC`, rather than `CLOCK_REALTIME`, since the wall-clock time may be subject to system changes). For example, 
 
 ```c
 #include <time.h>
@@ -318,7 +318,7 @@ clock_gettime(CLOCK_MONOTONIC, &stop);
 duration = (double) ((stop.tv_sec * 1000000000 + stop.tv_nsec) - (start.tv_sec * 1000000000 + start.tv_nsec)) / 1000000000.0;
 ```
 
-Different methods will provide different levels of fidelity (`clock()` will typically give an answer in microseconds, while `clock_gettime()` will provide nanosecond resolution), and different systems may support different methods. There is are platform independent methods provided by both OpenMP and the MPI standard, and we will cover these later in the module. 
+Different methods will provide different levels of fidelity (`clock()` will typically give an answer in microseconds, while `clock_gettime()` will provide nanosecond resolution), and different systems may support different methods. There are platform independent methods provided by both OpenMP and the MPI standard, and we will cover these later in the module. 
 
 > **Exercise** 
 >
@@ -372,7 +372,7 @@ You can access and read these counters programatically through the PAPI library,
 Firstly, you must include the PAPI header file, `<papi.h>`, and then you must compile and link against `libpapi` with: 
 
 ```
-$ gcc -lpapi test.c
+$ gcc test.c -lpapi
 ```
 
 You can read available counters (note above that some counters are not available on some systems) like so: 
@@ -433,7 +433,7 @@ Now that we have a collection of tools at our disposal for collecting performanc
 
 Code _**profilers**_ use timing information to generate a profile of an application's execution, such that we can identify performance hot spots. 
 
-A profiler can provide timing statistics for each of the functions in an application in a (usually) lightweight manner. Rather than timing each individual instruction, they employ statistical sampling -- while this many sacrifice some accuracy, it also reduces the overhead on the application, and thus avoids polluting performance data with frequent calls to a timing function. 
+A profiler can provide timing statistics for each of the functions in an application in a (usually) lightweight manner. Rather than timing each individual instruction, they employ statistical sampling -- while this may sacrifice some accuracy, it also reduces the overhead on the application, and thus avoids polluting performance data with frequent calls to a timing function. 
 
 The most widely available profiler on Linux systems is probably the GNU Profiler (`gprof`). To enable `gprof` profiling, you first compile the application with profiling enabled (the command line option to do this is the same between GCC and Clang). 
 
@@ -480,8 +480,8 @@ $ source $EBROOTADVISOR/setvars.sh
 You can then use Advisor on any application to collect performance statistics, and generate a report. 
 
 ```
-$ advisor --collect=survey --project-dir=./my_project -- ./my_project   # collect survey data
-$ advisor --report=survey --project-dir=./my_project                    # generate a survey report
+$ advisor --collect=survey --project-dir=./my_project -- ./my_application   # collect survey data
+$ advisor --report=survey --project-dir=./my_project                        # generate a survey report
 ```
 
 Alternatively, you could load the project into the Advisor GUI, to explore performance more fully.
@@ -502,13 +502,13 @@ Besides code profiling, one of the most important methods developed for analysin
 
 Roofline is a visual heuristic model that allows developers to plot the performance of a kernel in terms of its operational intensity and its floating-point performance. These opposing axes allow us to reason about whether the performance of a kernel is being bound by the memory bandwidth available, or by the computational power available. 
 
-In a Roofline model, multiple ceilings can be plotted (e.g. maximum floating point performance, maximum performance without SIMD, etc.), alongside unit slops calculated based on the memory bandwidth of various memory subsystems (e.g. L1 bandwidth, L2 bandwidth, DRAM bandwidth). Figure 2 shows the calculated data from an AMD Opteron X2 (taken from the Roofline paper). 
+In a Roofline model, multiple ceilings can be plotted (e.g. maximum floating point performance, maximum performance without SIMD, etc.), alongside unit slopes calculated based on the memory bandwidth of various memory subsystems (e.g. L1 bandwidth, L2 bandwidth, DRAM bandwidth). Figure 2 shows the calculated data from an AMD Opteron X2 (taken from the Roofline paper). 
 
 ![A roofline model for an AMD Opteron CPU](../../assets/unit-3/roofline.png)  
 _**Figure 2:** A Roofline model for an AMD Opteron X2_
 {: style="color:gray; font-size: 90%; text-align: center;" }
 
-In the figure, peak performance is only attainable if thread-level and instruction-level parallelism are used -- if a kernel is unable to use either, its performance will be bound by the lowest horizontal line. The computational intensity (i.e. how many FLOP/s are performed per byte of data moved from memory) will also dictate its performance. If an application runs at most 1 floating point operation per 4 bytes loaded, even with SIMD, ILP and TLP, the performance would be bound to 4 GFLOP/s (i.e. at most 25% of the peak performance available). 
+In the figure, peak performance is only attainable if thread-level and instruction-level parallelism are used -- if a kernel is unable to use either, its performance will be bound by the lowest horizontal line. The computational intensity (i.e. how many FLOPs are performed per byte of data moved from memory) will also dictate its performance. If an application runs at most 1 floating point operation per 4 bytes loaded, even with SIMD, ILP, and TLP, the performance would be bound to 4 GFLOP/s (i.e. at most 25% of the peak performance available). 
 
 Importantly, a Roofline model is plotted using the maximum attainable values, and then a kernels performance can be plotted as a single point within the chart.  
 

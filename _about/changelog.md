@@ -30,3 +30,8 @@ layout: post
 
 * A new practical on Scientific Computing has been added for the 2025-26 run of this module.
 * Numerous corrections have been made throughout the material.
+
+### 2026-09-16
+
+* The site has been moved to a github-hosted site: [https://hipc-book.github.io](https://hipc-book.github.io)
+* The 2025-26 site was archived for reference
